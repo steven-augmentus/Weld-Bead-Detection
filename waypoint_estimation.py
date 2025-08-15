@@ -41,9 +41,9 @@ if __name__ == "__main__":
     import time
     start_time = time.time()
     try:
-        pcd = o3d.io.read_point_cloud("./data/cylinder/seam_2_seg_6.pcd")
+        pcd = o3d.io.read_point_cloud("./data/08.cropped.pcd")
         # Downsample the point cloud for faster processing
-        #pcd = pcd.voxel_down_sample(voxel_size=0.5)
+        pcd = pcd.voxel_down_sample(voxel_size=0.5)
         weld_type = determine_weld_type(pcd)
         print(f"Detected Weld Type: {weld_type}")
     except Exception as e:
