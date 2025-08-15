@@ -37,16 +37,21 @@ def create_coordinate_frame(size=10.0):
     return lineset
 
 if __name__ == "__main__":
+    # Time the execution of the script
+    import time
+    start_time = time.time()
     try:
         pcd = o3d.io.read_point_cloud("./data/cylinder/seam_2_seg_6.pcd")
+        # Downsample the point cloud for faster processing
+        #pcd = pcd.voxel_down_sample(voxel_size=0.5)
         weld_type = determine_weld_type(pcd)
         print(f"Detected Weld Type: {weld_type}")
     except Exception as e:
         print(f"Error loading file: {e}")
         exit()
 
-    print("\n--- Initial Visualization ---")
-    o3d.visualization.draw_geometries([pcd], window_name="Original Point Cloud")
+    #print("\n--- Initial Visualization ---")
+    #o3d.visualization.draw_geometries([pcd], window_name="Original Point Cloud")
     
     if weld_type == "corner":
         print("\n--- Processing Corner Weld ---")
@@ -60,4 +65,5 @@ if __name__ == "__main__":
     else:
         print("\n--- Unsupported Weld Type ---")
         exit()
+    print(f"Execution Time: {time.time() - start_time:.2f} seconds")
         
