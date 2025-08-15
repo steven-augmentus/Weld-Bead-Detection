@@ -38,7 +38,7 @@ def create_coordinate_frame(size=10.0):
 
 if __name__ == "__main__":
     try:
-        pcd = o3d.io.read_point_cloud("./data/seam_1/seam_1_seg_1.pcd")
+        pcd = o3d.io.read_point_cloud("./data/seam_1/seam_2_seg_6.pcd")
         weld_type = determine_weld_type(pcd)
         print(f"Detected Weld Type: {weld_type}")
     except Exception as e:
