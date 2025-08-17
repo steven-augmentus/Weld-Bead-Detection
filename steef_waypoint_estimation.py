@@ -169,7 +169,7 @@ def save_outputs(
 
 def main():
     parser = argparse.ArgumentParser(description="RANSAC plane segmentation + half-space filtering")
-    parser.add_argument("--pcd", type=str, default="./data/08.cropped.pcd", help="Input point cloud")
+    parser.add_argument("--pcd", type=str, default="./data/08.pcd", help="Input point cloud")
     parser.add_argument("--voxel", type=float, default=0.5, help="Voxel size for downsampling (0 to disable)")
     parser.add_argument("--dist", type=float, default=0.5, help="RANSAC distance threshold")
     parser.add_argument("--ransac_n", type=int, default=3, help="RANSAC sample size")
@@ -236,12 +236,13 @@ def main():
     kept_above = None
     if args.keep_above:
         kept_above, dropped, s = split_by_halfspace(pcd, plane_model, keep_above=True, margin=args.below_margin)
-        kept_above.paint_uniform_color([0.7, 0.7, 0.7])
+        kept_above.paint_uniform_color([1, 0, 0])
+        dropped.paint_uniform_color([0.7, 0.7, 0.7])
         plane_cloud.paint_uniform_color(plane_rgb)
         print(f"Kept {len(kept_above.points)} on/above plane; removed {len(dropped.points)} below "
               f"(margin={args.below_margin}).")
         o3d.visualization.draw_geometries(
-            [kept_above],
+            [kept_above,dropped],
             window_name="Only above-plane points"
         )
     else:

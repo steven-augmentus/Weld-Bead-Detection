@@ -24,6 +24,6 @@ pip install open3d numpy
 echo.
 echo Setup complete. Virtual environment 'steefVenv' is active.
 
-python steef_waypoint_estimation.py --keep_above --below_margin -1 --force_up_normal
+python steef_waypoint_estimation.py --keep_above --below_margin -0.8 --force_up_normal
 
 pause
