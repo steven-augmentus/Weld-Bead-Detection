@@ -7,14 +7,18 @@ import time
 import argparse
 import numpy as np
 import open3d as o3d
-
-
+from centerline import compute_centerline, visualize_with_centerline
+from pcd_clean_radius import estimate_radius, keep_largest_component_radius
 # ---------------------------
 # Helpers
 # ---------------------------
 
 def load_and_downsample(path: str, voxel_size: float = 0.5) -> o3d.geometry.PointCloud:
+    # time this function
+    start_time = time.time()
     pcd = o3d.io.read_point_cloud(path)
+    end_time = time.time()
+    print(f"Loaded point cloud in {end_time - start_time:.2f} seconds")
     if pcd.is_empty():
         raise ValueError(f"Loaded point cloud is empty: {path}")
     if voxel_size and voxel_size > 0:
@@ -168,6 +172,8 @@ def save_outputs(
 # ---------------------------
 
 def main():
+    #start timer
+
     parser = argparse.ArgumentParser(description="RANSAC plane segmentation + half-space filtering")
     parser.add_argument("--pcd", type=str, default="./data/08.pcd", help="Input point cloud")
     parser.add_argument("--voxel", type=float, default=0.5, help="Voxel size for downsampling (0 to disable)")
@@ -187,12 +193,10 @@ def main():
                     help="DBSCAN min points per cluster")
     args = parser.parse_args()
 
-    start_time = time.time()
-
     # Parse colors
     plane_rgb = tuple(map(float, args.plane_color.split(",")))
     others_rgb = tuple(map(float, args.others_color.split(",")))
-
+    start_time = time.time()
     # Load & downsample
     try:
         originalpcd = load_and_downsample(args.pcd, args.voxel)
@@ -241,10 +245,10 @@ def main():
         plane_cloud.paint_uniform_color(plane_rgb)
         print(f"Kept {len(kept_above.points)} on/above plane; removed {len(dropped.points)} below "
               f"(margin={args.below_margin}).")
-        o3d.visualization.draw_geometries(
+        """o3d.visualization.draw_geometries(
             [kept_above,dropped],
             window_name="Only above-plane points"
-        )
+        )"""
     else:
         o3d.visualization.draw_geometries([rest_cloud, plane_cloud, plane_patch],
                                           window_name="Plane (colored) vs Others + plane patch")
@@ -257,8 +261,21 @@ def main():
     print(f"Plane: {a:.6f} x + {b:.6f} y + {c:.6f} z + {d:.6f} = 0   | normal = {n_unit}")
     print(f"Execution Time: {time.time() - start_time:.2f} s")
 
-    
+    kept_above = keep_largest_component_radius(kept_above, 2, min_component_size=0)
 
+    # 2) Compute the centerline
+    center_pts, center_ls = compute_centerline(
+        kept_above,
+        n_slices=500,      # increase if the cloud is long and detailed
+        min_points=2,    # min points per slice to keep a centroid
+        smooth_window=7,   # odd integer; set 0/1 to disable smoothing
+        force_endpoints=True
+    )
+    # Stop timer
+    end_time = time.time()
+    print(f"Centerline computation time: {end_time - start_time:.2f} s")
+    # 3) Visualize (point cloud + centerline + waypoint spheres)
+    visualize_with_centerline(kept_above, center_pts)
 
 if __name__ == "__main__":
     main()

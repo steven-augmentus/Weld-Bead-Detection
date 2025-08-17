@@ -19,11 +19,11 @@ REM Upgrade pip
 python -m pip install --upgrade pip
 
 REM Install packages
-pip install open3d numpy
+pip install open3d numpy scipy networkx
 
 echo.
 echo Setup complete. Virtual environment 'steefVenv' is active.
 
-python steef_waypoint_estimation.py --keep_above --below_margin -0.8 --force_up_normal
+python steef_waypoint_estimation.py --keep_above --below_margin -1 --force_up_normal
 
 pause
