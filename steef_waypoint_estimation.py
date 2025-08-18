@@ -196,13 +196,14 @@ def main():
     # Parse colors
     plane_rgb = tuple(map(float, args.plane_color.split(",")))
     others_rgb = tuple(map(float, args.others_color.split(",")))
-    start_time = time.time()
     # Load & downsample
     try:
         originalpcd = load_and_downsample(args.pcd, args.voxel)
     except Exception as e:
         print(f"Error loading file: {e}")
         sys.exit(1)
+        
+    start_time = time.time()
     pcd = originalpcd
     # Segment dominant plane
     try:
