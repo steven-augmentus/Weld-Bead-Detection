@@ -48,8 +48,8 @@ def compute_centerline(
     pcd: o3d.geometry.PointCloud,
     n_slices: int = 60,
     min_points: int = 30,
-    smooth_window: int = 7,
-    force_endpoints: bool = True,   # <--- NEW FLAG
+    smooth_window: int = 10,
+    force_endpoints: bool = True, 
 ):
     """
     Slice the cloud along its principal axis and take the centroid of each slice.
